@@ -1,0 +1,535 @@
+<?php
+/* @var \Magmodules\ReviewReminder\ViewModel\Review\Form $viewModel */
+$viewModel = $block->getViewModel();
+?>
+
+<div class="hidden">
+    <?= $block->getChildHtml('page.main.title'); ?>
+</div>
+
+<div x-data="initReviewReminder()"
+     class="md:grid md:gap-x-8 md:grid-cols-[minmax(0,_1fr)_250px] md:items-start
+            lg:grid-cols-[minmax(0,_1fr)_320px]">
+
+    <!-- Progress bar for steps -->
+    <div class="progress flex justify-between gap-5 flex-wrap mb-8 md:items-center md:pr-4 md:col-span-2 lg:pr-0">
+        <?= $block->getChildHtml('logo'); ?>
+
+        <?php
+            $steps = $viewModel->isAddShopreview() 
+                ? [__('Review'), __('Shopreview'), __('Submitted')] 
+                : [__('Review'), __('Submitted')];
+        ?>
+
+        <div class="steps hidden sm:flex sm:gap-2" x-data='{ steps: <?= json_encode($steps); ?>}'>
+            <span class="relative flex items-center h-8 pl-5 pr-4 bg-gray-200 text-sm cursor-pointer z-50
+                         lg:text-base lg:h-10 lg:pl-7 lg:pr-6 lg:after:border-y-[20px]
+                         after:absolute after:-right-4 after:top-0 after:border-y-[16px] after:border-y-transparent
+                         after:border-l-[16px] after:border-l-gray-200"
+                  :class="{ '!pointer-events-none': activeStep == 3 }"
+                  @click="activeStep = 0">
+
+                <?= $block->escapeHtml(__('Products')) ?>
+            </span>
+
+            <template x-for="(step, index) in steps">
+                <span class="relative flex items-center h-8 pl-5 pr-4 bg-gray-200 text-sm cursor-pointer z-40
+                         opacity-50 transition-opacity duration-300 pointer-events-none
+                         lg:text-base lg:h-10 lg:pl-7 lg:pr-6 lg:after:border-y-[20px] lg:before:border-y-[20px]
+                         before:absolute before:-left-[1px] before:top-0 before:border-y-[16px] before:border-y-transparent
+                         before:border-l-[16px] before:border-l-white
+                         after:absolute after:-right-4 after:top-0 after:border-y-[16px] after:border-y-transparent
+                         after:border-l-[16px] after:border-l-gray-200"
+                      :class="{ 
+                        '!z-30': index == 1,
+                        '!z-20': index == 2,
+                        '!opacity-100 pointer-events-auto': index < activeStep,
+                        '!pointer-events-none': activeStep == 3,
+                        'bg-green-300 after:border-l-green-300': index == steps.length - 1 && activeStep == 3
+                      }"
+                      @click="activeStep = index + 1"
+                      x-text="step">
+                </span>
+            </template>
+        </div>
+    </div>
+
+    <!-- Steps content -->
+    <div class="content">
+        <div class="step-1 hidden"
+             :class="{ '!block': activeStep == 0 }">
+
+            <form>
+                <div class="step-wrapper mb-16">
+                    <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
+                        <?= $block->escapeHtml(__("Nickname")) ?>
+                    </h2>
+                    <div class="text-sm opacity-70 mb-4">
+                        <?= $block->escapeHtml(__("A nickname is required for every review and is publicly visible next
+                                            to each review you write. For privacy reasons, we do recommend using a nickname 
+                                            instead of your full name.")); ?>
+                    </div>
+                    <div class="field required">
+                        <label for="fakeNickname" class="sr-only">
+                            <span><?= $block->escapeHtml(__('Nickname')) ?></span>
+                        </label>
+                        <div class="control">
+                            <input x-model="nickname"
+                                   class="form-input text-sm w-full max-w-xs"
+                                   type="text" name="fakeNickname" id="fakeNickname" required="true"
+                                   placeholder="<?= $block->escapeHtml(__('Nickname')) ?>">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-wrapper mb-7">
+                    <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
+                        <?= $block->escapeHtml(__("Let's write a review")) ?>
+                    </h2>
+                    <div class="text-sm opacity-70">
+                        <?= $block->escapeHtml(__("With your review, you help us, as well as other customers, gain even
+                                        more relevant information about the product. You can always check and edit the 
+                                        written review in your account.")); ?>
+                    </div>
+                </div>
+
+                <div id="formProducts" class="step-wrapper grid gap-5 mb-6 pb-8 border-b border-stone-300"
+                     style="grid-template-columns: repeat(auto-fit,minmax(200px,1fr))">
+
+                    <?php foreach ($viewModel->getItems() as $index => $item): ?>
+                        <?php
+                            $product = $item->getProduct();
+                            $imageUrl = $viewModel->getImageUrl($product);
+                        ?>
+
+                        <div class="relative flex border border-stone-200 bg-white rounded-lg">
+                            <input  class="absolute right-1/2 bottom-1/2 opacity-0 w-0 h-0"
+                                    required="true" name="reviewReminderProductStep1" type="checkbox"
+                                    id="review-reminder_product_<?= $block->escapeHtml($index) ?>"
+                                    x-bind:checked="productChecked.includes(<?= $index ?>)">
+
+                            <label  class="mb-0 w-full p-4 text-center text-sm flex flex-col
+                                           cursor-pointer rounded-lg transition-shadow duration-300
+                                           hover:shadow-lg"
+
+                                    :class="{ 'shadow-lg': productChecked.includes(<?= $index ?>) }"
+                                    for="review-reminder_product_<?= $block->escapeHtml($index) ?>"
+                                    @click="saveCheckedProduct(<?= $index ?>)">
+
+                                <div class="icon absolute top-2 right-2 w-7 h-7">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                         stroke-width="1" stroke="#d6d3d1" class="w-7 h-7 absolute transition-opacity duration-300"
+                                         :class="{ 
+                                            'opacity-0': productChecked.includes(<?= $index ?>),
+                                            'opacity-100': !productChecked.includes(<?= $index ?>)
+                                        }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                         stroke-width="1" stroke="#22c55e" class="w-7 h-7 absolute transition-opacity duration-300"
+                                         :class="{ 
+                                            'opacity-0': !productChecked.includes(<?= $index ?>),
+                                            'opacity-100': productChecked.includes(<?= $index ?>)
+                                        }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+
+                                <img class="mx-auto mb-4" src="<?= $block->escapeHtml($imageUrl) ?>">
+                                <h3><?= $block->escapeHtml($item->getName()); ?></h3>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <button class="btn btn-primary ml-auto" @click="showStepReview">
+                    <?= $block->escapeHtml(__('Next')) ?>
+                </button>
+            </form>
+        </div>
+
+        <div class="step-2 hidden" :class="{ '!block': activeStep == 1 }">
+            <form id="review-reminder-form" name="review" @submit.prevent="submitFormReview"
+                    action="<?= $block->escapeHtml($block->getUrl('reviewreminder/review/save')); ?>">
+
+                <div class="step-wrapper mb-10">
+                    <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
+                        <?= $block->escapeHtml(__("Review")) ?>
+                    </h2>
+                    <div class="text-sm opacity-70 mb-4">
+                        <?= $block->escapeHtml(__("By posting reviews you give permission to use your personal data in
+                                        accordance with the privacy statement. In your review we do not show any personal 
+                                        information such as your email address or name. You may receive emails regarding 
+                                        your review.")); ?>
+                    </div>
+                </div>
+
+                <div id="reviewProducts" 
+                    class="step-wrapper grid gap-5 mb-6 md:!grid-cols-1 border-b border-stone-300 pb-8 md:border-0 md:pb-0"
+                    style="grid-template-columns: repeat(auto-fit,minmax(200px,1fr))">
+
+                    <?php foreach ($viewModel->getItems() as $index => $item): ?>
+                        <?php
+                            $product = $item->getProduct();
+                            $imageUrl = $viewModel->getImageUrl($product);
+                        ?>
+
+                        <div class="hidden p-4 flex-col gap-5 border border-stone-200 bg-white rounded-lg
+                                    md:flex-row"
+                            :class="{ '!flex': productChecked.includes(<?= $index ?>) }">
+
+                            <div class="text-sm text-center text-stone-700 md:max-w-[150px] md:w-full">
+                                <img class="mx-auto mb-4" src="<?= $block->escapeHtml($imageUrl) ?>">
+                                <div><?= $block->escapeHtml($item->getName()) ?></div>
+                            </div>
+
+                            <div class="md:w-full">
+                                <input type="hidden" name="nickname"
+                                    value="<?= $block->escapeHtml($viewModel->getNickname()) ?>">
+                                <input type="hidden" name="email"
+                                    value="<?= $block->escapeHtml($viewModel->getEmail()) ?>">
+                                <input type="hidden" name="store_id"
+                                    value="<?= $block->escapeHtml($viewModel->getStoreId()) ?>">
+                                <input type="hidden" name="order_id"
+                                    value="<?= $block->escapeHtml($viewModel->getOrderId()) ?>">
+                                <input type="hidden" name="customer_id"
+                                    value="<?= $block->escapeHtml($viewModel->getCustomerId()) ?>">
+
+                                <div class="grid gap-2 md:h-full md:flex md:flex-col">
+                                    <div class="rating-wrapper">
+                                        <?php foreach ($viewModel->getRatings() as $rating): ?>
+                                            <?php $labelId = "Rating_rating_label_" . $rating->getRatingId(); ?>
+
+                                            <div class="table-row">
+                                                <label class="hidden lg:table-cell pr-6 align-middle text-left" id="<?= $block->escapeHtml($labelId) ?>>">
+                                                    <?= __('Your %1:', $block->escapeHtml($rating->getRatingCode())) ?>
+                                                </label>
+
+                                                <div class="flex flex-row grow-0" x-data="{ clickedRatingId: 0, focusId: 0 }">
+                                                    <?php
+                                                        $optionsData = [];
+                                                        $options = $rating->getOptions();
+
+                                                        foreach ($options as $option) {
+                                                            $optionsData[$option->getValue()] = $option->getOptionId();
+                                                        }
+
+                                                        ksort($optionsData);
+
+                                                        foreach ($optionsData as $optionValue => $optionId):
+                                                            $inputId    = sprintf("Rating_%s_%s_%s", $optionValue, $index, $rating->getRatingId());
+                                                            $inputName  = sprintf("ratings[%s][%s]", $rating->getRatingId(), $index);
+                                                            $labelId    = sprintf("Rating_%s_label_%s", $optionValue, $rating->getRatingId());
+                                                            $labelFor   = sprintf("Rating_%s_%s_%s", $optionValue, $index, $rating->getRatingId());
+                                                    ?>
+
+                                                    <div class="relative"
+                                                        @click="clickedRatingId = <?= (int)$optionValue ?> || 0"
+                                                        @mouseover="focusId = <?= (int)$optionValue ?> || 0"
+                                                        @mouseleave="focusId = 0">
+                                                        
+                                                        <input type="radio" 
+                                                            x-bind:required="productChecked.includes(<?= $index ?>)"
+                                                            class="absolute opacity-0 bottom-0 left-0 cursor-pointer"
+                                                            name="<?= $block->escapeHtml($inputName) ?>"
+                                                            id="<?= $block->escapeHtml($inputId) ?>"
+                                                            value="<?= $block->escapeHtml($optionId) ?>"
+                                                            x-model="rating<?= $index ?>">
+
+                                                        <label
+                                                            class="rating-<?= $block->escapeHtml($optionValue) ?> m-0 cursor-pointer text-gray-400"
+                                                            for="<?= $block->escapeHtml($labelFor) ?>"
+                                                            title="<?= $block->escapeHtml($optionValue) ?> star"
+                                                            id="<?= $block->escapeHtml($labelId) ?>">
+
+                                                            <span class="text-stone-200" 
+                                                                :class="<?= (int)$optionValue ?> <= focusId ? '!text-yellow-400' : '' ">
+                                                                <span class="transition-colors duration-300"
+                                                                    :class="<?= (int)$optionValue ?> <= clickedRatingId ? 'text-yellow-400' : '' ">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-8 h-8">
+                                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                                    </svg>
+                                                                </span>
+                                                            </sapn>
+                                                        </label>
+                                                    </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+
+                                                <input type="hidden" name="validate_rating" class="validate-rating" value="">
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+
+                                    <div class="field !mt-0">
+                                        <label for="summary_field_<?= $block->escapeHtml($index) ?>" class="sr-only">
+                                            <?= $block->escapeHtml(__('Summary')) ?>
+                                        </label>
+                                        <div class="control">
+                                            <input type="text" 
+                                                x-bind:required="productChecked.includes(<?= $index ?>)"
+                                                name="summary[<?= $block->escapeHtml($index) ?>]"
+                                                id="summary_field_<?= $block->escapeHtml($index) ?>"
+                                                placeholder="<?= $block->escapeHtml(__('Summary*')) ?>"
+                                                class="form-input text-sm w-full max-w-xs md:max-w-none">
+                                        </div>
+                                        <input type="hidden" name="product_id[]" 
+                                            value="<?= $block->escapeHtml($product->getId()) ?>">
+                                    </div>
+
+                                    <div class="field !mt-0 md:flex md:h-full">
+                                        <label for="review_field_<?= $block->escapeHtml($index) ?>" class="sr-only">
+                                            <?= $block->escapeHtml(__('Write your review')) ?>
+                                        </label>
+                                        <div class="control flex md:w-full">
+                                            <textarea name="detail[<?= $block->escapeHtml($index) ?>]"
+                                                    id="review_field_<?= $block->escapeHtml($index) ?>"
+                                                    placeholder="<?= $block->escapeHtml(__('Write your review*')) ?>"
+                                                    class="form-input text-sm w-full max-w-xs md:max-w-none"
+                                                    rows="4"
+                                                    x-bind:required="productChecked.includes(<?= $index ?>)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="action-wrapper flex items-center justify-end gap-6">
+                    <span class="text-sm transition-colors duration-300 text-stone-500 cursor-pointer 
+                                underline underline-offset-2 hover:text-stone-800"
+                        @click="activeStep = 0">
+                        <?= $block->escapeHtml(__('Back')) ?>
+                    </span>
+
+                    <button class="btn btn-primary" type="submit">
+                        <?= $block->escapeHtml(__('Next')) ?>
+                    </button>
+                </div>
+            </form>
+        </div>   
+
+        <!-- Display if "Shopreview" enable -->
+        <?php if ($viewModel->isAddShopreview()): ?>
+            <div class="step-3 hidden" :class="{ '!block': activeStep == 2 }">
+                <form class="review-form" name='shopreview' id="review-form" @submit.prevent="submitFormShopreview"
+                    action="<?= $block->escapeUrl($block->getUrl('shopreview/form/save')) ?>">
+
+                    <div class="step-wrapper">
+                        <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
+                            <?= $block->escapeHtml(__("Shopreview")) ?>
+                        </h2>
+                        <div class="text-sm opacity-70 mb-4">
+                            <?php if($block->getChildBlock('magmodules.shopreview.form')): ?>
+                                <?= $block->getChildBlock('magmodules.shopreview.form')
+                                        ->setData('form_id', $viewModel->getFormId())->toHtml();?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="action-wrapper flex items-center justify-end gap-6">
+                        <span class="text-sm transition-colors duration-300 text-stone-500 cursor-pointer 
+                                    underline underline-offset-2 hover:text-stone-800"
+                            @click="activeStep = 1">
+                            <?= $block->escapeHtml(__('Back')) ?>
+                        </span>
+                        <button type="sumbit" class="btn btn-primary">
+                            <?= $block->escapeHtml(__('Next')) ?>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <div class="step-4 hidden" 
+             :class="{ '!block': activeStep == 3 }">
+
+            <div class="step-wrapper">
+                <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
+                    <?= $block->escapeHtml(__("Submitted")) ?>
+                </h2>
+                <div class="opacity-70">
+                    <?= $block->escapeHtml(__("Thank you again for your recent purchase with number")); ?>
+                    <b><?= '#' . $viewModel->getOrderIncrementId(); ?></b>.
+                    <?= $block->escapeHtml(__("With your review, you help us, as well as other customers, gain even more 
+                                    relevant information about the product. You can always check and edit the written review 
+                                    in your account. Have a good day!")); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar with additional inforamtion -->
+    <div tabindex="0" 
+         class="sidebar hidden p-5 bg-stone-100 rounded-lg shadow-md 
+                md:block md:sticky md:top-5">
+
+        <h3 class="text-lg pb-2 mb-4 border-b border-stone-300 text-stone-700 lg:text-2xl">
+            Order #<?= $block->escapeHtml($viewModel->getOrderIncrementId()) ?>
+        </h3>
+
+        <div class="text-sm grid gap-4 text-stone-800">
+            <div x-show="activeStep > 0">
+                <b><?= $block->escapeHtml(__('Nickname')) ?></b>
+                <div class="opacity-70 italic" x-text="nickname"></div>
+            </div>
+
+            <div>
+                <b><?= $block->escapeHtml(__('Email')) ?></b>
+                <span class="text-xs opacity-50">
+                    <?= $block->escapeHtml(__('( not publicly visible )')) ?>
+                </span>
+                <div class="opacity-70 italic"><?= $block->escapeHtml($viewModel->getEmail()) ?></div>
+            </div>
+
+            <div x-show="productChecked.length > 0">
+                <b class="inline-block mb-1"><?= $block->escapeHtml(__('Products to review')) ?></b>
+
+                <div class="grid gap-1">
+                    <?php foreach ($viewModel->getItems() as $index => $item): ?>
+                        <div class="hidden opacity-70 italic pl-5 flex-wrap relative
+                                    before:content-['-'] before:absolute before:left-0
+                                    lg:before:hidden lg:pl-0 lg:pr-28"
+                            :class="{ '!flex': productChecked.includes(<?= $index ?>) }">
+                            <?= $block->escapeHtml($item->getName()) ?>
+
+                            <span class="flex -ml-1 mb-1 w-full lg:absolute lg:right-0 lg:w-auto" 
+                                  x-show="activeStep == 3">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 15  }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </span>
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 16 }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </span>
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 17 }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </span>
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 18 }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </span>
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 19 }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader block -->
+    <?= $block->getChildHtml('loading') ?>
+</div>
+
+<script>
+    'use strict';
+
+    function initReviewReminder() {
+        return {
+            activeStep: 0,
+            productChecked: [],
+            nickname: '<?= $block->escapeHtml($viewModel->getNickname()) ?>',
+            countOfProduct: <?= count($viewModel->getItems()) ?>,
+            shopreviewActive: <?= $viewModel->isAddShopreview() ? $viewModel->isAddShopreview() : 0 ?>,
+            savedReviewRequest: {},
+            isLoading: false,
+
+            init() {
+                let productStorage = sessionStorage.getItem("review-reminder-items"),
+                    productArray = productStorage ? productStorage.split(',').map((num) => +num) : [];
+
+                if (productArray.length) productArray.forEach((id) => this.productChecked.push(id));
+
+                // Dynamic creation of properties to track the final rating of products.
+                for (let i = 0; i < this.countOfProduct; i++) this[`rating${i}`] = 0;
+            },
+
+            showStepReview(e) {
+                // Before going to step 2 need to check form validation
+                let form = e.target.closest('form'),
+                    nickname = form.querySelector('#fakeNickname');
+
+                if (nickname.value.length && this.productChecked.length) {
+                    e.preventDefault();
+                    this.activeStep = 1;
+                }
+            },
+
+            submitFormShopreview(e) {
+                const URLParams = new URLSearchParams(),
+                      ACTION = e.target.getAttribute('action');
+
+                // Data collection and sorting by products.
+                for (let pair of new FormData(e.target)) URLParams.append(pair[0], pair[1]);
+
+                this.isLoading = true;
+                this.sendAjaxRequest(this.savedReviewRequest.action, this.savedReviewRequest.params);
+                this.sendAjaxRequest(ACTION, URLParams.toString());
+            },
+
+            submitFormReview(e) {
+                const URLParams = new URLSearchParams(),
+                      ACTION = e.target.getAttribute('action');
+                
+                let dataArray = [],
+                    ratingArray = [];
+
+                // Data collection and sorting by products.
+                for (let pair of new FormData(e.target)) {
+                    if (pair[0] === 'nickname') ratingArray = [];
+                    ratingArray.push({ 'key': pair[0], 'value': pair[1] });
+                    if (pair[0].includes('detail')) dataArray.push(ratingArray);
+                }
+
+                // Creating a query string from active products only
+                dataArray.forEach((arr) => {
+                    if (arr.length == 10) arr.forEach((obj) => URLParams.append(obj['key'], obj['value']));
+                });
+
+                if (this.shopreviewActive) {
+                    this.savedReviewRequest.action = ACTION;
+                    this.savedReviewRequest.params = URLParams.toString();
+                    this.activeStep = 2;
+                } else {
+                    this.isLoading = true;
+                    this.sendAjaxRequest(ACTION, URLParams.toString());
+                }
+            },
+
+            saveCheckedProduct(id) {
+                !this.productChecked.includes(id)
+                    ? this.productChecked.push(id)
+                    : this.productChecked.splice(this.productChecked.indexOf(id), 1);
+
+                // save information to session storage
+                sessionStorage.setItem("review-reminder-items", this.productChecked);
+            },
+
+            sendAjaxRequest(url, parameters) {
+                fetch(`${url}?${parameters}`, { method:'get' })            
+                    .then(res => {
+                        res.status == 200
+                            ? this.activeStep = 3
+                            : console.error('The request was sent successfully, but the request status is not equal to 200');
+                        
+                        sessionStorage.removeItem("review-reminder-items");
+                    })
+                    .catch(err => console.error(err))
+                    .finally(() => { this.isLoading = false } );
+            }
+        }
+    }
+</script>

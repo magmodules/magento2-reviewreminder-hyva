@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<page layout="checkout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Review Remind Email Order Items List" design_abstraction="custom">
+    <body>
+
+        <!-- MOVE -->
+        <move element="page.main.title" destination="magmodules.review.form" />
+        <move element="logo" destination="magmodules.review.form" />
+        <!-- ./MOVE -->
+
+        <referenceBlock name="logo">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magmodules_HyvaReviewReminder::html/header/logo.phtml</argument>
+            </action>
+        </referenceBlock>
+
+        <referenceBlock name="magmodules.review.form">
+            <block name="loading" template="Hyva_Theme::ui/loading.phtml"/>
+        </referenceBlock>
+    </body>
+</page>
