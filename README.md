@@ -1,5 +1,5 @@
 
-![265455183-7f717a0b-3794-490f-875c-6f8eac592caa](https://github.com/magmodules/magento2-reviewreminder-hyva/assets/24823946/9b6c53e4-d6ae-4b18-83ce-009502098d00)
+![265455183-7f717a0b-3794-490f-875c-6f8eac592caa](https://github.com/magmodules/magento2-reviewreminder-hyva/assets/24823946/983c1ad3-5271-425a-889d-5e8e7931b9e8)
 
 # Product Review Reminder Hyvä Compatibility plugin
 
