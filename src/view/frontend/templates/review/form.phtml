@@ -225,17 +225,16 @@ $viewModel = $block->getViewModel();
                                                     ?>
 
                                                     <div class="relative"
-                                                        @click="clickedRatingId = <?= (int)$optionValue ?> || 0"
+                                                        @click="() => { clickedRatingId = <?= (int)$optionValue ?> || 0; getAvarageRating(clickedRatingId, <?= $index ?>, '<?= $rating->getRatingCode() ?>') }"
                                                         @mouseover="focusId = <?= (int)$optionValue ?> || 0"
                                                         @mouseleave="focusId = 0">
                                                         
                                                         <input type="radio" 
-                                                            x-bind:required="productChecked.includes(<?= $index ?>)"
+                                                            :required="productChecked.includes(<?= $index ?>)"
                                                             class="absolute opacity-0 bottom-0 left-0 cursor-pointer"
                                                             name="<?= $block->escapeHtml($inputName) ?>"
                                                             id="<?= $block->escapeHtml($inputId) ?>"
-                                                            value="<?= $block->escapeHtml($optionId) ?>"
-                                                            x-model="rating<?= $index ?>">
+                                                            value="<?= $block->escapeHtml($optionId) ?>">
 
                                                         <label
                                                             class="rating-<?= $block->escapeHtml($optionValue) ?> m-0 cursor-pointer text-gray-400"
@@ -397,27 +396,27 @@ $viewModel = $block->getViewModel();
 
                             <span class="flex -ml-1 mb-1 w-full lg:absolute lg:right-0 lg:w-auto" 
                                   x-show="activeStep == 3">
-                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 15  }">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?>['avarage'] >= 1  }">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
                                 </span>
-                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 16 }">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?>['avarage'] >= 2 }">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
                                 </span>
-                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 17 }">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?>['avarage'] >= 3 }">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
                                 </span>
-                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 18 }">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?>['avarage'] >= 4 }">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
                                 </span>
-                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?> > 19 }">
+                                <span class="text-stone-200" :class="{ '!text-yellow-400': rating<?= $index ?>['avarage'] == 5 }">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
@@ -454,7 +453,7 @@ $viewModel = $block->getViewModel();
                 if (productArray.length) productArray.forEach((id) => this.productChecked.push(id));
 
                 // Dynamic creation of properties to track the final rating of products.
-                for (let i = 0; i < this.countOfProduct; i++) this[`rating${i}`] = 0;
+                for (let i = 0; i < this.countOfProduct; i++) this[`rating${i}`] = {};
             },
 
             showStepReview(e) {
@@ -496,7 +495,7 @@ $viewModel = $block->getViewModel();
 
                 // Creating a query string from active products only
                 dataArray.forEach((arr) => {
-                    if (arr.length == 10) arr.forEach((obj) => URLParams.append(obj['key'], obj['value']));
+                    arr.forEach((obj) => URLParams.append(obj['key'], obj['value']));
                 });
 
                 if (this.shopreviewActive) {
@@ -529,6 +528,22 @@ $viewModel = $block->getViewModel();
                     })
                     .catch(err => console.error(err))
                     .finally(() => { this.isLoading = false } );
+            },
+
+            getAvarageRating(value, index, label) {
+                let sum = 0,
+                    count = 0;
+                
+                this[`rating${index}`][label] = value;
+
+                for (let key in this[`rating${index}`]) {
+                    if (key !== 'avarage') {
+                        sum += this[`rating${index}`][key];
+                        count += 1;
+                    }
+                }
+
+                this[`rating${index}`]['avarage'] = Math.round(sum / count);
             }
         }
     }
