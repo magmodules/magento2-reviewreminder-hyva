@@ -13,6 +13,16 @@
             </action>
         </referenceBlock>
 
+        <referenceContainer name="content">
+            <block name="magmodules.review.form"
+                   class="Magento\Framework\View\Element\Template"
+                   template="Magmodules_HyvaReviewReminder::review/form.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Magmodules\ReviewReminder\ViewModel\Review\Form</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
         <referenceBlock name="magmodules.review.form">
             <block name="loading" template="Hyva_Theme::ui/loading.phtml"/>
         </referenceBlock>
