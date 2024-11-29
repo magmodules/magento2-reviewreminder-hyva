@@ -1,5 +1,6 @@
 <?php
 /** @var Magmodules\HyvaReviewReminder\ViewModel\Review\Form $viewModel */
+/** @var Magento\Framework\Escaper $escaper */
 /** @var Hyva\Theme\ViewModel\HeroiconsOutline $heroiconsOutline */
 /** @var Hyva\Theme\ViewModel\HeroiconsSolid $heroiconsSolid */
 
@@ -32,7 +33,7 @@ $steps = $viewModel->getSteps();
                         :class="{ '!pointer-events-none': activeStep == 3 }"
                         @click="activeStep = 0">
 
-                        <?= $block->escapeHtml(__('Products')) ?>
+                        <?= $escaper->escapeHtml(__('Products')) ?>
                     </span>
 
                     <template x-for="(step, index) in steps">
@@ -65,30 +66,30 @@ $steps = $viewModel->getSteps();
                     <form>
                         <div class="step-wrapper mb-16">
                             <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
-                                <?= $block->escapeHtml(__("Nickname")) ?>
+                                <?= $escaper->escapeHtml(__("Nickname")) ?>
                             </h2>
                             <div class="text-sm opacity-70 mb-4">
-                                <?= $block->escapeHtml(__("[review:reminder:nickname:text]")); ?>
+                                <?= $escaper->escapeHtml(__("[review:reminder:nickname:text]")); ?>
                             </div>
                             <div class="field required">
                                 <label for="fakeNickname" class="sr-only">
-                                    <span><?= $block->escapeHtml(__('Nickname')) ?></span>
+                                    <span><?= $escaper->escapeHtml(__('Nickname')) ?></span>
                                 </label>
                                 <div class="control">
                                     <input x-model="nickname"
                                         class="form-input text-sm w-full max-w-xs"
                                         type="text" name="fakeNickname" id="fakeNickname" required="true"
-                                        placeholder="<?= $block->escapeHtml(__('Nickname')) ?>">
+                                        placeholder="<?= $escaper->escapeHtmlAttr(__('Nickname')) ?>">
                                 </div>
                             </div>
                         </div>
 
                         <div class="step-wrapper mb-7">
                             <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
-                                <?= $block->escapeHtml(__("Let's write a review")) ?>
+                                <?= $escaper->escapeHtml(__("Let's write a review")) ?>
                             </h2>
                             <div class="text-sm opacity-70">
-                                <?= $block->escapeHtml(__("[review:reminder:write:review:text]")); ?>
+                                <?= $escaper->escapeHtml(__("[review:reminder:write:review:text]")); ?>
                             </div>
                         </div>
 
@@ -105,16 +106,16 @@ $steps = $viewModel->getSteps();
                                 <div class="relative flex border border-stone-200 bg-white rounded-lg">
                                     <input  class="absolute right-1/2 bottom-1/2 opacity-0 w-0 h-0"
                                             required="true" name="reviewReminderProductStep1" type="checkbox"
-                                            id="review-reminder_product_<?= $block->escapeHtml($index) ?>"
-                                            x-ref="input_<?= $block->escapeHtml($index) ?>">
+                                            id="review-reminder_product_<?= $escaper->escapeHtmlAttr($index) ?>"
+                                            x-ref="input_<?= $escaper->escapeHtmlAttr($index) ?>">
 
                                     <label  class="mb-0 w-full p-4 text-center text-sm flex flex-col
                                                 cursor-pointer rounded-lg transition-shadow duration-300
                                                 hover:shadow-lg"
 
                                             :class="{ 'shadow-lg': productChecked.includes(<?= $index ?>) }"
-                                            for="review-reminder_product_<?= $block->escapeHtml($index) ?>"
-                                            @click="saveCheckedProduct(<?= $index ?>, $refs.input_<?= $block->escapeHtml($index) ?>)">
+                                            for="review-reminder_product_<?= $escaper->escapeHtmlAttr($index) ?>"
+                                            @click="saveCheckedProduct(<?= $index ?>, $refs.input_<?= $escaper->escapeHtmlAttr($index) ?>)">
 
                                         <div class="icon absolute top-2 right-2 w-7 h-7">
                                             <span class="absolute top-0 right-0 transition-opacity duration-300 text-[#d6d3d1]"
@@ -128,29 +129,29 @@ $steps = $viewModel->getSteps();
                                             </span>
                                         </div>
 
-                                        <img class="mx-auto mb-4" src="<?= $block->escapeHtml($imageUrl) ?>">
-                                        <h3><?= $block->escapeHtml($item->getName()); ?></h3>
+                                        <img class="mx-auto mb-4" src="<?= $escaper->escapeUrl($imageUrl) ?>">
+                                        <h3><?= $escaper->escapeHtml($item->getName()); ?></h3>
                                     </label>
                                 </div>
                             <?php endforeach; ?>
                         </div>
 
                         <button class="btn btn-primary ml-auto" @click="showStepReview">
-                            <?= $block->escapeHtml(__('Next')) ?>
+                            <?= $escaper->escapeHtml(__('Next')) ?>
                         </button>
                     </form>
                 </div>
 
                 <div class="step-2 hidden" :class="{ '!block': activeStep == 1 }">
                     <form id="review-reminder-form" name="review" @submit.prevent="submitFormReview"
-                            action="<?= $block->escapeHtml($block->getUrl('reviewreminder/review/save')); ?>">
+                            action="<?= $escaper->escapeUrl($block->getUrl('reviewreminder/review/save')); ?>">
 
                         <div class="step-wrapper mb-10">
                             <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
-                                <?= $block->escapeHtml(__("Review")) ?>
+                                <?= $escaper->escapeHtml(__("Review")) ?>
                             </h2>
                             <div class="text-sm opacity-70 mb-4">
-                                <?= $block->escapeHtml(__("[review:reminder:review:text]")); ?>
+                                <?= $escaper->escapeHtml(__("[review:reminder:review:text]")); ?>
                             </div>
                         </div>
 
@@ -169,21 +170,21 @@ $steps = $viewModel->getSteps();
                                     :class="{ '!flex': productChecked.includes(<?= $index ?>) }">
 
                                     <div class="text-sm text-center text-stone-700 md:max-w-[150px] md:w-full">
-                                        <img class="mx-auto mb-4" src="<?= $block->escapeHtml($imageUrl) ?>">
-                                        <div><?= $block->escapeHtml($item->getName()) ?></div>
+                                        <img class="mx-auto mb-4" src="<?= $escaper->escapeUrl($imageUrl) ?>">
+                                        <div><?= $escaper->escapeHtml($item->getName()) ?></div>
                                     </div>
 
                                     <div class="md:w-full">
                                         <input type="hidden" name="nickname"
-                                            value="<?= $block->escapeHtml($viewModel->getNickname()) ?>">
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getNickname()) ?>">
                                         <input type="hidden" name="email"
-                                            value="<?= $block->escapeHtml($viewModel->getEmail()) ?>">
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getEmail()) ?>">
                                         <input type="hidden" name="store_id"
-                                            value="<?= $block->escapeHtml($viewModel->getStoreId()) ?>">
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getStoreId()) ?>">
                                         <input type="hidden" name="order_id"
-                                            value="<?= $block->escapeHtml($viewModel->getOrderId()) ?>">
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getOrderId()) ?>">
                                         <input type="hidden" name="customer_id"
-                                            value="<?= $block->escapeHtml($viewModel->getCustomerId()) ?>">
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getCustomerId()) ?>">
 
                                         <div class="grid gap-2 md:h-full md:flex md:flex-col">
                                             <div class="rating-wrapper">
@@ -191,8 +192,8 @@ $steps = $viewModel->getSteps();
                                                     <?php $labelId = "Rating_rating_label_" . $rating->getRatingId(); ?>
 
                                                     <div class="table-row">
-                                                        <label class="hidden lg:table-cell pr-6 align-middle text-left" id="<?= $block->escapeHtml($labelId) ?>>">
-                                                            <?= __('Your %1:', $block->escapeHtml($rating->getRatingCode())) ?>
+                                                        <label class="hidden lg:table-cell pr-6 align-middle text-left" id="<?= $escaper->escapeHtml($labelId) ?>>">
+                                                            <?= $escaper->escapeHtml(__('Your %1:', $rating->getRatingCode())); ?>
                                                         </label>
 
                                                         <div class="flex flex-row grow-0" x-data="{ clickedRatingId: 0, focusId: 0 }">
@@ -221,15 +222,15 @@ $steps = $viewModel->getSteps();
                                                                 <input type="radio" 
                                                                     :required="productChecked.includes(<?= $index ?>)"
                                                                     class="absolute opacity-0 bottom-0 left-0 cursor-pointer"
-                                                                    name="<?= $block->escapeHtml($inputName) ?>"
-                                                                    id="<?= $block->escapeHtml($inputId) ?>"
-                                                                    value="<?= $block->escapeHtml($optionId) ?>">
+                                                                    name="<?= $escaper->escapeHtmlAttr($inputName) ?>"
+                                                                    id="<?= $escaper->escapeHtmlAttr($inputId) ?>"
+                                                                    value="<?= $escaper->escapeHtmlAttr($optionId) ?>">
 
                                                                 <label
-                                                                    class="rating-<?= $block->escapeHtml($optionValue) ?> m-0 cursor-pointer text-gray-400"
-                                                                    for="<?= $block->escapeHtml($labelFor) ?>"
-                                                                    title="<?= $block->escapeHtml($optionValue) ?> star"
-                                                                    id="<?= $block->escapeHtml($labelId) ?>">
+                                                                    class="rating-<?= $escaper->escapeHtmlAttr($optionValue) ?> m-0 cursor-pointer text-gray-400"
+                                                                    for="<?= $escaper->escapeHtmlAttr($labelFor) ?>"
+                                                                    title="<?= $escaper->escapeHtmlAttr($optionValue) ?> star"
+                                                                    id="<?= $escaper->escapeHtmlAttr($labelId) ?>">
 
                                                                     <span class="text-stone-200" 
                                                                         :class="<?= (int)$optionValue ?> <= focusId ? '!text-yellow-400' : '' ">
@@ -249,29 +250,29 @@ $steps = $viewModel->getSteps();
                                             </div>
 
                                             <div class="field !mt-0">
-                                                <label for="summary_field_<?= $block->escapeHtml($index) ?>" class="sr-only">
-                                                    <?= $block->escapeHtml(__('Summary')) ?>
+                                                <label for="summary_field_<?= $escaper->escapeHtmlAttr($index) ?>" class="sr-only">
+                                                    <?= $escaper->escapeHtml(__('Summary')) ?>
                                                 </label>
                                                 <div class="control">
                                                     <input type="text" 
                                                         x-bind:required="productChecked.includes(<?= $index ?>)"
-                                                        name="summary[<?= $block->escapeHtml($index) ?>]"
-                                                        id="summary_field_<?= $block->escapeHtml($index) ?>"
-                                                        placeholder="<?= $block->escapeHtml(__('Summary*')) ?>"
+                                                        name="summary[<?= $escaper->escapeHtmlAttr($index) ?>]"
+                                                        id="summary_field_<?= $escaper->escapeHtmlAttr($index) ?>"
+                                                        placeholder="<?= $escaper->escapeHtmlAttr(__('Summary*')) ?>"
                                                         class="form-input text-sm w-full max-w-xs md:max-w-none">
                                                 </div>
                                                 <input type="hidden" name="product_id[]" 
-                                                    value="<?= $block->escapeHtml($product->getId()) ?>">
+                                                    value="<?= $escaper->escapeHtmlAttr($product->getId()) ?>">
                                             </div>
 
                                             <div class="field !mt-0 md:flex md:h-full">
-                                                <label for="review_field_<?= $block->escapeHtml($index) ?>" class="sr-only">
-                                                    <?= $block->escapeHtml(__('Write your review')) ?>
+                                                <label for="review_field_<?= $escaper->escapeHtmlAttr($index) ?>" class="sr-only">
+                                                    <?= $escaper->escapeHtml(__('Write your review')) ?>
                                                 </label>
                                                 <div class="control flex md:w-full">
-                                                    <textarea name="detail[<?= $block->escapeHtml($index) ?>]"
-                                                            id="review_field_<?= $block->escapeHtml($index) ?>"
-                                                            placeholder="<?= $block->escapeHtml(__('Write your review*')) ?>"
+                                                    <textarea name="detail[<?= $escaper->escapeHtmlAttr($index) ?>]"
+                                                            id="review_field_<?= $escaper->escapeHtmlAttr($index) ?>"
+                                                            placeholder="<?= $escaper->escapeHtmlAttr(__('Write your review*')) ?>"
                                                             class="form-input text-sm w-full max-w-xs md:max-w-none"
                                                             rows="4"
                                                             x-bind:required="productChecked.includes(<?= $index ?>)"></textarea>
@@ -287,11 +288,11 @@ $steps = $viewModel->getSteps();
                             <span class="text-sm transition-colors duration-300 text-stone-500 cursor-pointer 
                                         underline underline-offset-2 hover:text-stone-800"
                                 @click="activeStep = 0">
-                                <?= $block->escapeHtml(__('Back')) ?>
+                                <?= $escaper->escapeHtml(__('Back')) ?>
                             </span>
 
                             <button class="btn btn-primary" type="submit">
-                                <?= $block->escapeHtml(__('Next')) ?>
+                                <?= $escaper->escapeHtml(__('Next')) ?>
                             </button>
                         </div>
                     </form>
@@ -301,11 +302,11 @@ $steps = $viewModel->getSteps();
                 <?php if ($viewModel->isAddShopreview()): ?>
                     <div class="step-3 hidden" :class="{ '!block': activeStep == 2 }">
                         <form class="review-form" name='shopreview' id="review-form" @submit.prevent="submitFormShopreview"
-                            action="<?= $block->escapeUrl($block->getUrl('shopreview/form/save')) ?>">
+                            action="<?= $escaper->escapeUrl($block->getUrl('shopreview/form/save')) ?>">
 
                             <div class="step-wrapper">
                                 <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
-                                    <?= $block->escapeHtml(__("Shopreview")) ?>
+                                    <?= $escaper->escapeHtml(__("Shopreview")) ?>
                                 </h2>
                                 <div class="text-sm opacity-70 mb-4">
                                     <?php if($block->getChildBlock('magmodules.shopreview.form')): ?>
@@ -319,10 +320,10 @@ $steps = $viewModel->getSteps();
                                 <span class="text-sm transition-colors duration-300 text-stone-500 cursor-pointer 
                                             underline underline-offset-2 hover:text-stone-800"
                                     @click="activeStep = 1">
-                                    <?= $block->escapeHtml(__('Back')) ?>
+                                    <?= $escaper->escapeHtml(__('Back')) ?>
                                 </span>
                                 <button type="sumbit" class="btn btn-primary">
-                                    <?= $block->escapeHtml(__('Next')) ?>
+                                    <?= $escaper->escapeHtml(__('Next')) ?>
                                 </button>
                             </div>
                         </form>
@@ -334,10 +335,10 @@ $steps = $viewModel->getSteps();
 
                     <div class="step-wrapper">
                         <h2 class="mb-7 pb-2 border-b border-stone-300 text-2xl text-stone-700">
-                            <?= $block->escapeHtml(__("Submitted")) ?>
+                            <?= $escaper->escapeHtml(__("Submitted")) ?>
                         </h2>
                         <div class="opacity-70">
-                            <?= $block->escapeHtml(__("[review:reminder:success:text]%1", $viewModel->getOrderIncrementId()), ['b']); ?>
+                            <?= $escaper->escapeHtml(__("[review:reminder:success:text]%1", $viewModel->getOrderIncrementId()), ['b']); ?>
                         </div>
                     </div>
                 </div>
@@ -349,25 +350,25 @@ $steps = $viewModel->getSteps();
                         md:block md:sticky md:top-5">
 
                 <h3 class="text-lg pb-2 mb-4 border-b border-stone-300 text-stone-700 lg:text-2xl">
-                    Order #<?= $block->escapeHtml($viewModel->getOrderIncrementId()) ?>
+                    <?= $escaper->escapeHtml(__('Order #%1', $viewModel->getOrderIncrementId())) ?>
                 </h3>
 
                 <div class="text-sm grid gap-4 text-stone-800">
                     <div x-show="activeStep > 0">
-                        <b><?= $block->escapeHtml(__('Nickname')) ?></b>
+                        <b><?= $escaper->escapeHtml(__('Nickname')) ?></b>
                         <div class="opacity-70 italic" x-text="nickname"></div>
                     </div>
 
                     <div>
-                        <b><?= $block->escapeHtml(__('Email')) ?></b>
+                        <b><?= $escaper->escapeHtml(__('Email')) ?></b>
                         <span class="text-xs opacity-50">
-                            <?= $block->escapeHtml(__('( not publicly visible )')) ?>
+                            <?= $escaper->escapeHtml(__('( not publicly visible )')) ?>
                         </span>
-                        <div class="opacity-70 italic"><?= $block->escapeHtml($viewModel->getEmail()) ?></div>
+                        <div class="opacity-70 italic"><?= $escaper->escapeHtml($viewModel->getEmail()) ?></div>
                     </div>
 
                     <div x-show="productChecked.length > 0">
-                        <b class="inline-block mb-1"><?= $block->escapeHtml(__('Products to review')) ?></b>
+                        <b class="inline-block mb-1"><?= $escaper->escapeHtml(__('Products to review')) ?></b>
 
                         <div class="grid gap-1">
                             <?php foreach ($viewModel->getItems() as $index => $item): ?>
@@ -375,7 +376,7 @@ $steps = $viewModel->getSteps();
                                             before:content-['-'] before:absolute before:left-0
                                             lg:before:hidden lg:pl-0 lg:pr-28"
                                     :class="{ '!flex': productChecked.includes(<?= $index ?>) }">
-                                    <?= $block->escapeHtml($item->getName()) ?>
+                                    <?= $escaper->escapeHtml($item->getName()) ?>
 
                                     <span class="flex -ml-1 mb-1 w-full lg:absolute lg:right-0 lg:w-auto" 
                                         x-show="activeStep == 3">
@@ -413,9 +414,9 @@ $steps = $viewModel->getSteps();
                 return {
                     activeStep: 0,
                     productChecked: [],
-                    nickname: '<?= $block->escapeHtml($viewModel->getNickname()) ?>',
-                    countOfProduct: <?= count($viewModel->getItems()) ?>,
-                    shopreviewActive: <?= $viewModel->isAddShopreview() ? $viewModel->isAddShopreview() : 0 ?>,
+                    nickname: '<?= $escaper->escapeJs($viewModel->getNickname()) ?>',
+                    countOfProduct: <?= json_encode((int) count($viewModel->getItems())) ?>,
+                    shopreviewActive: <?= json_encode($viewModel->isAddShopreview()) ?>,
                     savedReviewRequest: {},
                     isLoading: false,
 
