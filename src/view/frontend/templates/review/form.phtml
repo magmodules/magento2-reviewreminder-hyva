@@ -528,11 +528,11 @@ $steps = $viewModel->getSteps();
         </script>
     <?php else: ?>
         <div class="message warning">
-            <?= $escaper->escapeHtml(__('You have already made review for this order')) ?>
+            <?= $escaper->escapeHtml(__('Thank you! You\'ve already submitted a review for this order.')) ?>
         </div>
     <?php endif?>
 <?php else: ?>
     <div class="message warning">
-        <?= $escaper->escapeHtml(__('Order you requested was not found')) ?>
+        <?= $escaper->escapeHtml(__('We\'re sorry, but the order you requested could not be found.')) ?>
     </div>
 <?php endif?>
