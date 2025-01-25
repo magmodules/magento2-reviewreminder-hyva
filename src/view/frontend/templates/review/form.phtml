@@ -107,7 +107,8 @@ $steps = $viewModel->getSteps();
                                     <input  class="absolute right-1/2 bottom-1/2 opacity-0 w-0 h-0"
                                             required="true" name="reviewReminderProductStep1" type="checkbox"
                                             id="review-reminder_product_<?= $escaper->escapeHtmlAttr($index) ?>"
-                                            x-ref="input_<?= $escaper->escapeHtmlAttr($index) ?>">
+                                            x-ref="input_<?= $escaper->escapeHtmlAttr($index) ?>"
+                                            <?= $index === 0 ? 'checked' : '' ?>>
 
                                     <label  class="mb-0 w-full p-4 text-center text-sm flex flex-col
                                                 cursor-pointer rounded-lg transition-shadow duration-300
@@ -413,7 +414,7 @@ $steps = $viewModel->getSteps();
             function initReviewReminder() {
                 return {
                     activeStep: 0,
-                    productChecked: [],
+                    productChecked: [0],
                     nickname: '<?= $escaper->escapeJs($viewModel->getNickname()) ?>',
                     countOfProduct: <?= json_encode((int) count($viewModel->getItems())) ?>,
                     shopreviewActive: <?= json_encode($viewModel->isAddShopreview()) ?>,
