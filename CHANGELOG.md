@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 **Improvements:**
 * The sidebar shows until when the review link is valid.
 * A guest is no longer told to check the review in an account.
-* Requires Product Review Reminder 2.0.0, which answers the form's request with JSON.
+* Requires Product Review Reminder 2.0.0, which answers the form's request with JSON and takes the order from the link's hash the form posts.
 
 **Compatibility:**
 * Magento 2.4.x and up
