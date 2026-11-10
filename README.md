@@ -10,7 +10,10 @@ Effortlessly solicit reviews through a high-conversion email and landing page wh
 The Product Review Remindercompatibility plugin for the Magento Hyvä theme has the following requirements:
 - [Magento 2.4.+](https://github.com/magento/magento2)
 - [Hyvä](https://github.com/hyva-themes)
-- [Magmodules Product Review Reminder](https://www.magmodules.eu/magento2-product-review-reminder.html)
+- [Magmodules Product Review Reminder](https://www.magmodules.eu/magento2-product-review-reminder.html) 2.0.0 or later
+
+**Frontend Form**
+![Schermopname2024-11-29om11 29 45-ezgif com-speed](https://github.com/user-attachments/assets/0f01e673-8ff9-4656-81b4-bbef3eaa58b3)
 
 **Frontend Form**
 ![Schermopname2024-11-29om11 29 45-ezgif com-speed](https://github.com/user-attachments/assets/0f01e673-8ff9-4656-81b4-bbef3eaa58b3)
