@@ -69,7 +69,11 @@ $steps = $viewModel->getSteps();
                                 <?= $escaper->escapeHtml(__("Nickname")) ?>
                             </h2>
                             <div class="text-sm opacity-70 mb-4">
-                                <?= $escaper->escapeHtml(__("[review:reminder:nickname:text]")); ?>
+                                <?= $escaper->escapeHtml(__(
+                                    "A nickname is required for every review and is publicly visible next to "
+                                    . "each review you write. For privacy reasons, we do recommend using a nickname "
+                                    . "instead of your full name."
+                                )); ?>
                             </div>
                             <div class="field required">
                                 <label for="fakeNickname" class="sr-only">
@@ -89,7 +93,15 @@ $steps = $viewModel->getSteps();
                                 <?= $escaper->escapeHtml(__("Let's write a review")) ?>
                             </h2>
                             <div class="text-sm opacity-70">
-                                <?= $escaper->escapeHtml(__("[review:reminder:write:review:text]")); ?>
+                                <?= $escaper->escapeHtml(__(
+                                    "With your review, you help us, as well as other customers, "
+                                    . "gain even more relevant information about the product."
+                                )) ?>
+                                <?php if (!$viewModel->isGuestOrder()): ?>
+                                    <?= $escaper->escapeHtml(
+                                        __("You can always check and edit the written review in your account.")
+                                    ) ?>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -152,7 +164,12 @@ $steps = $viewModel->getSteps();
                                 <?= $escaper->escapeHtml(__("Review")) ?>
                             </h2>
                             <div class="text-sm opacity-70 mb-4">
-                                <?= $escaper->escapeHtml(__("[review:reminder:review:text]")); ?>
+                                <?= $escaper->escapeHtml(__(
+                                    'By posting reviews you give permission to use your personal data in accordance '
+                                    . 'with the privacy statement. In your review we do not show any personal '
+                                    . 'information such as your email address or name. You may receive emails '
+                                    . 'regarding your review.'
+                                )); ?>
                             </div>
                         </div>
 
@@ -176,14 +193,14 @@ $steps = $viewModel->getSteps();
                                     </div>
 
                                     <div class="md:w-full">
-                                        <input type="hidden" name="nickname"
+                                        <input type="hidden" name="nickname" :value="nickname"
                                             value="<?= $escaper->escapeHtmlAttr($viewModel->getNickname()) ?>">
                                         <input type="hidden" name="email"
                                             value="<?= $escaper->escapeHtmlAttr($viewModel->getEmail()) ?>">
                                         <input type="hidden" name="store_id"
                                             value="<?= $escaper->escapeHtmlAttr($viewModel->getStoreId()) ?>">
-                                        <input type="hidden" name="order_id"
-                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getOrderId()) ?>">
+                                        <input type="hidden" name="hash"
+                                            value="<?= $escaper->escapeHtmlAttr($viewModel->getHash()) ?>">
                                         <input type="hidden" name="customer_id"
                                             value="<?= $escaper->escapeHtmlAttr($viewModel->getCustomerId()) ?>">
 
@@ -239,7 +256,7 @@ $steps = $viewModel->getSteps();
                                                                             :class="<?= (int)$optionValue ?> <= clickedRatingId ? 'text-yellow-400' : '' ">
                                                                             <?= $heroiconsSolid->starHtml('', 32, 32) ?>
                                                                         </span>
-                                                                    </sapn>
+                                                                    </span>
                                                                 </label>
                                                             </div>
                                                             <?php endforeach; ?>
@@ -262,7 +279,7 @@ $steps = $viewModel->getSteps();
                                                         placeholder="<?= $escaper->escapeHtmlAttr(__('Summary*')) ?>"
                                                         class="form-input text-sm w-full max-w-xs md:max-w-none">
                                                 </div>
-                                                <input type="hidden" name="product_id[]" 
+                                                <input type="hidden" name="product_id[<?= $escaper->escapeHtmlAttr($index) ?>]" 
                                                     value="<?= $escaper->escapeHtmlAttr($product->getId()) ?>">
                                             </div>
 
@@ -285,6 +302,7 @@ $steps = $viewModel->getSteps();
                             <?php endforeach; ?>
                         </div>
 
+                        <p class="text-sm text-red-600 mb-4" x-show="errorMessage" x-text="errorMessage" x-cloak></p>
                         <div class="action-wrapper flex items-center justify-end gap-6">
                             <span class="text-sm transition-colors duration-300 text-stone-500 cursor-pointer 
                                         underline underline-offset-2 hover:text-stone-800"
@@ -323,7 +341,7 @@ $steps = $viewModel->getSteps();
                                     @click="activeStep = 1">
                                     <?= $escaper->escapeHtml(__('Back')) ?>
                                 </span>
-                                <button type="sumbit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">
                                     <?= $escaper->escapeHtml(__('Next')) ?>
                                 </button>
                             </div>
@@ -339,7 +357,19 @@ $steps = $viewModel->getSteps();
                             <?= $escaper->escapeHtml(__("Submitted")) ?>
                         </h2>
                         <div class="opacity-70">
-                            <?= $escaper->escapeHtml(__("[review:reminder:success:text]%1", $viewModel->getOrderIncrementId()), ['b']); ?>
+                            <?= $escaper->escapeHtml(
+                                __("Thank you again for your recent purchase with number #%1!", $viewModel->getOrderIncrementId())
+                            ) ?>
+                            <?= $escaper->escapeHtml(__(
+                                "With your review, you help us, as well as other customers, "
+                                . "gain even more relevant information about the product."
+                            )) ?>
+                            <?php if (!$viewModel->isGuestOrder()): ?>
+                                <?= $escaper->escapeHtml(
+                                    __("You can always check and edit the written review in your account.")
+                                ) ?>
+                            <?php endif; ?>
+                            <?= $escaper->escapeHtml(__("Have a good day!")) ?>
                         </div>
                     </div>
                 </div>
@@ -367,6 +397,13 @@ $steps = $viewModel->getSteps();
                         </span>
                         <div class="opacity-70 italic"><?= $escaper->escapeHtml($viewModel->getEmail()) ?></div>
                     </div>
+
+                    <?php if ($expireAt = $viewModel->getExpirationDate()): ?>
+                        <div>
+                            <b><?= $escaper->escapeHtml(__('Valid until: ')) ?></b>
+                            <div class="opacity-70 italic"><?= $escaper->escapeHtml($expireAt) ?></div>
+                        </div>
+                    <?php endif; ?>
 
                     <div x-show="productChecked.length > 0">
                         <b class="inline-block mb-1"><?= $escaper->escapeHtml(__('Products to review')) ?></b>
@@ -419,6 +456,7 @@ $steps = $viewModel->getSteps();
                     countOfProduct: <?= json_encode((int) count($viewModel->getItems())) ?>,
                     shopreviewActive: <?= json_encode($viewModel->isAddShopreview()) ?>,
                     savedReviewRequest: {},
+                    errorMessage: '',
                     isLoading: false,
 
                     init() {
@@ -443,44 +481,72 @@ $steps = $viewModel->getSteps();
                     },
 
                     submitFormShopreview(e) {
-                        const URLParams = new URLSearchParams(),
-                            ACTION = e.target.getAttribute('action');
-
-                        // Data collection and sorting by products.
-                        for (let pair of new FormData(e.target)) URLParams.append(pair[0], pair[1]);
-
                         this.isLoading = true;
-                        this.sendAjaxRequest(this.savedReviewRequest.action, this.savedReviewRequest.params);
-                        this.sendAjaxRequest(ACTION, URLParams.toString());
+                        this.errorMessage = '';
+                        // The product review first; the shop review only once that one is in
+                        this.postReview(this.savedReviewRequest.action, this.savedReviewRequest.body)
+                            .then((ok) => ok && this.postForm(e.target.getAttribute('action'), this.formBody(e.target)))
+                            .then((ok) => { if (ok) this.finish(); })
+                            .finally(() => { this.isLoading = false });
                     },
 
                     submitFormReview(e) {
-                        const URLParams = new URLSearchParams(),
-                            ACTION = e.target.getAttribute('action');
-                        
-                        let dataArray = [],
-                            ratingArray = [];
+                        const ACTION = e.target.getAttribute('action'),
+                            body = this.formBody(e.target);
 
-                        // Data collection and sorting by products.
-                        for (let pair of new FormData(e.target)) {
-                            if (pair[0] === 'nickname') ratingArray = [];
-                            ratingArray.push({ 'key': pair[0], 'value': pair[1] });
-                            if (pair[0].includes('detail')) dataArray.push(ratingArray);
-                        }
-
-                        // Creating a query string from active products only
-                        dataArray.forEach((arr) => {
-                            arr.forEach((obj) => URLParams.append(obj['key'], obj['value']));
-                        });
-
+                        this.errorMessage = '';
                         if (this.shopreviewActive) {
-                            this.savedReviewRequest.action = ACTION;
-                            this.savedReviewRequest.params = URLParams.toString();
+                            this.savedReviewRequest = { action: ACTION, body };
                             this.activeStep = 2;
-                        } else {
-                            this.isLoading = true;
-                            this.sendAjaxRequest(ACTION, URLParams.toString());
+                            return;
                         }
+
+                        this.isLoading = true;
+                        this.postReview(ACTION, body)
+                            .then((ok) => { if (ok) this.finish(); })
+                            .finally(() => { this.isLoading = false });
+                    },
+
+                    /**
+                     * Everything the form holds, the nickname the customer typed and Magento's form key:
+                     * the save controller accepts a POST with a valid form key only.
+                     */
+                    formBody(form) {
+                        const body = new FormData(form);
+                        body.set('nickname', this.nickname);
+                        body.set('form_key', hyva.getFormKey());
+                        return body;
+                    },
+
+                    /** The review save answers JSON to an XHR: success, or the reason it refused. */
+                    postReview(url, body) {
+                        return fetch(url, {
+                            method: 'POST',
+                            body,
+                            credentials: 'same-origin',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        })
+                            .then((res) => res.json().catch(() => ({})).then((data) => {
+                                if (res.ok && data.success) return true;
+                                this.errorMessage = data.message || '<?= $escaper->escapeJs(__('Your review could not be saved. Please try again.')) ?>';
+                                return false;
+                            }))
+                            .catch(() => {
+                                this.errorMessage = '<?= $escaper->escapeJs(__('Your review could not be saved. Please try again.')) ?>';
+                                return false;
+                            });
+                    },
+
+                    /** Another module's form (the shop review): a 2xx is all it promises. */
+                    postForm(url, body) {
+                        return fetch(url, { method: 'POST', body, credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then((res) => res.ok)
+                            .catch(() => false);
+                    },
+
+                    finish() {
+                        this.activeStep = 3;
+                        sessionStorage.removeItem("review-reminder-items");
                     },
 
                     saveCheckedProduct(id, input) {
@@ -494,19 +560,6 @@ $steps = $viewModel->getSteps();
 
                         // save information to session storage
                         sessionStorage.setItem("review-reminder-items", this.productChecked);
-                    },
-
-                    sendAjaxRequest(url, parameters) {
-                        fetch(`${url}?${parameters}`, { method:'get' })            
-                            .then(res => {
-                                res.status == 200
-                                    ? this.activeStep = 3
-                                    : console.error('The request was sent successfully, but the request status is not equal to 200');
-                                
-                                sessionStorage.removeItem("review-reminder-items");
-                            })
-                            .catch(err => console.error(err))
-                            .finally(() => { this.isLoading = false } );
                     },
 
                     getAvarageRating(value, index, label) {
