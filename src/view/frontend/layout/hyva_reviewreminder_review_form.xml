@@ -14,9 +14,11 @@
         </referenceBlock>
 
         <referenceContainer name="content">
+            <!-- The customer's name, masked e-mail and review state: never in the full page cache -->
             <block name="magmodules.review.form"
                    class="Magento\Framework\View\Element\Template"
-                   template="Magmodules_HyvaReviewReminder::review/form.phtml">
+                   template="Magmodules_HyvaReviewReminder::review/form.phtml"
+                   cacheable="false">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Magmodules\ReviewReminder\ViewModel\Review\Form</argument>
                 </arguments>

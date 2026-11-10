@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 * The nickname the customer typed was never sent; the review carried the name the order had.
 * Reviewing some of the products of an order mixed up summaries and ratings between products: the product ids were renumbered while the other fields kept their position. Every field now carries the product's own index.
 * Dutch (and every other non-English) store view showed the placeholder translation keys such as `[review:reminder:nickname:text]`. The templates use the sentences of Product Review Reminder itself, so its translations apply.
+* The form page was stored in the full page cache; the block is not cacheable, like the Luma form.
 
 **Improvements:**
 * The sidebar shows until when the review link is valid.
